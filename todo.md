@@ -6,8 +6,8 @@
 - [ ] Postgre database
 - [ ] Encryption
 - [ ] Password Hashing
-- [ ] Dockerize
 - [ ] Integration tests
 - [ ] Implement REST routing
 - [ ] Implement gRPC
 - [ ] Implement Websocket
+- [X] Dockerize

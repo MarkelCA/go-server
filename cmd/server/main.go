@@ -10,6 +10,7 @@ import (
 
 
 func main() {
+    hello.HelloServer()
     http.HandleFunc("/hello", hello.HelloHandler) // Update this line of code
 
     fmt.Printf("Starting server at port 8080\n")

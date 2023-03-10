@@ -11,11 +11,11 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if r.Method != "GET" {
-        http.Error(w, "Method is not supported.", http.StatusNotFound)
+    if r.Method != http.MethodGet {
+        http.Error(w, "Method " + r.Method + " is not supported for this request.", http.StatusMethodNotAllowed)
         return
     }
 
 
-    fmt.Fprintf(w, "Hello World!")
+    fmt.Fprintf(w, "Hello Client!")
 }
