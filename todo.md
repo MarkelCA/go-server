@@ -1,5 +1,6 @@
 # To do list
 
+- [ ] Remove trailing "/" on route comparison
 - [ ] Dependency Injection for route handlers. [More info](https://medium.com/@benbjohnson/structuring-applications-in-go-3b04be4ff091)
 - [ ] Use middlewares
 - [ ] Authentication (With session cookies)
