@@ -5,22 +5,17 @@ import (
     "net/http"
 )
 
-type Router struct {
-    routes []*Route
+type Handler struct {
+    Method  string
+    Handler http.HandlerFunc
 }
+type Router map[string]Handler
 
 func NewRouter() Router {
     return Router{}
 }
 
 
-func (r Router) GetRoutes() []*Route {
-    return r.routes
-}
-
-func (r *Router) Add(route Route) {
-    r.routes = append(r.routes, &route)
-}
 
 func allowMethod(h http.HandlerFunc, method string) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
@@ -35,28 +30,23 @@ func allowMethod(h http.HandlerFunc, method string) http.HandlerFunc {
 
 func (r *Router) Get(path string, rawHandler http.HandlerFunc) {
     handler := allowMethod(rawHandler, http.MethodGet)
-    r.Add( Route{path, http.MethodGet, handler } )
+    fmt.Println(handler)
+    (*r)[path] = Handler{
+        http.MethodGet, 
+        handler,
+    }
 }
 
 func (r *Router) Post(path string, rawHandler http.HandlerFunc) {
     handler := allowMethod(rawHandler, http.MethodPost)
-    r.Add( Route{path, http.MethodPost, handler } )
+    fmt.Println(handler)
 }
 
 func (router Router) Init(mux *http.ServeMux) {
-    for _,r := range router.routes {
-        fmt.Printf("Added route %v (%v)\n", r.Path, r.Method)
-        mux.HandleFunc(r.Path, r.Handler)
+    for path,r := range router {
+        fmt.Printf("Added route %v -- %v\n", path, r)
+        //fmt.Printf("Added route %v (%v)\n", r.Path, r.Method)
+        mux.HandleFunc(path, r.Handler)
     }
 }
 
-
-type Route struct {
-    Path    string
-    Method  string
-    Handler http.HandlerFunc
-}
-
-func NewRoute(path string, method string, handler http.HandlerFunc) Route {
-    return Route{path, method, handler}
-}
