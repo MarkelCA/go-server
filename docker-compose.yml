@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   app:
+    image: go-server
     container_name: go-server
     build: .
     ports:

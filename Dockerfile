@@ -1,4 +1,6 @@
-FROM golang:1.20
+# syntax=docker/dockerfile:1
+
+FROM golang:1.20 AS builder
 
 WORKDIR /usr/src/app
 
@@ -7,6 +9,12 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./cmd/server/main.go
+RUN CGO_ENABLED=0 go build -v -a -installsuffix cgo  -o app ./cmd/server/main.go
 
-CMD ["app"]
+FROM alpine:latest  
+WORKDIR /root/
+COPY --from=builder /usr/src/app/app ./
+CMD ["./app"]
+
+
+

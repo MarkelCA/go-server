@@ -13,3 +13,4 @@
 - [ ] Implement gRPC
 - [ ] Implement Websocket
 - [X] Dockerize
+- [X] Docker multi-stage build
