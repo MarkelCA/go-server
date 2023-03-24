@@ -3,15 +3,22 @@ package router
 import (
     "net/http"
     "net/url"
+    "fmt"
 )
 
-type httpMethod uint
+type httpMethod string
 
+//const (
+	//mGET httpMethod = 1 << iota
+	//mPOST
+	//mPUT
+	//mDELETE
+//)
 const (
-	mGET httpMethod = 1 << iota
-	mPOST
-	mPUT
-	mDELETE
+	mGET httpMethod = http.MethodGet
+	mPOST           = http.MethodPost
+	mPUT            = http.MethodPut
+	mDELETE         = http.MethodDelete
 )
 
 var strToMethod = map[string]httpMethod{
@@ -52,8 +59,26 @@ func (r *Router) addRoute(path url.URL, method httpMethod, handler http.HandlerF
         }
     }
 
+    fmt.Printf("Added route %-4v -> %v\n", method, path.String()) // Method right-padded with 4 spaces
+
 }
 
+type Mux struct {
+    handler http.HandlerFunc
+}
+
+func (m *Mux) Init(r Router) {
+    m.handler = r.getHandler()
+}
+
+func NewMux() *Mux {
+    return &Mux{}
+}
+
+func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    m.handler(w, r)
+    fmt.Println("Doing nothing")
+}
 
 // Adds the route handlers to the multiplexer.
 func (r Router) Init(mux *http.ServeMux) {

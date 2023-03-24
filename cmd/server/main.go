@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
-    mux := http.NewServeMux()
+    mux := router.NewMux()
     r := router.NewRouter()
     r.Get("/hello", hello.HelloGetHandler)
     r.Post("/hello", hello.HelloPostHandler)
     r.Get("/hello/me", hello.MeGetHandler)
 
-    r.Init(mux)
+    mux.Init(r)
 
 
     err := http.ListenAndServe(":8080", mux)
