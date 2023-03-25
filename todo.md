@@ -1,6 +1,5 @@
 # To do list
 
-- [ ] Remove trailing "/" on route comparison
 - [ ] Dependency Injection for route handlers. [More info](https://medium.com/@benbjohnson/structuring-applications-in-go-3b04be4ff091)
 - [ ] Use middlewares
 - [ ] Authentication (With session cookies)
@@ -12,5 +11,6 @@
 - [ ] Implement REST routing
 - [ ] Implement gRPC
 - [ ] Implement Websocket
+- [X] Remove trailing "/" on route comparison
 - [X] Dockerize
 - [X] Docker multi-stage build

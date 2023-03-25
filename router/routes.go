@@ -45,6 +45,7 @@ func (r *Routes) Post(path string, handler http.HandlerFunc) {
 }
 
 func (r *Routes) addRoute(path url.URL, method httpMethod, handler http.HandlerFunc) {
+    removeTrailingSlash(&path)
     if _, pathExists := (*r)[path] ; pathExists {
         (*r)[path][method] = handler
     } else {
@@ -54,6 +55,17 @@ func (r *Routes) addRoute(path url.URL, method httpMethod, handler http.HandlerF
     }
 
     fmt.Printf("Added route %-4v -> %v\n", method, path.String()) // Method right-padded with 4 spaces
+
+}
+
+// Receives a request and if its URL ends with /
+// it removes it to match the original route
+func removeTrailingSlash(u *url.URL) {
+    ur := (*u).String()
+    lastURLChar := ur[len(ur)-1:]
+    if lastURLChar == "/" {
+        u.Path = ur[:len(ur)-1]
+    }
 
 }
 

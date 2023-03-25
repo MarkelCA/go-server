@@ -44,5 +44,8 @@ func (m *Mux) Post(path string, handler http.HandlerFunc) {
 
 func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Handling request")
+
+    removeTrailingSlash(r.URL)
     m.handler(w, r)
 }
+
