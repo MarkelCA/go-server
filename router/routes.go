@@ -8,12 +8,6 @@ import (
 
 type httpMethod string
 
-//const (
-	//mGET httpMethod = 1 << iota
-	//mPOST
-	//mPUT
-	//mDELETE
-//)
 const (
 	mGET httpMethod = http.MethodGet
 	mPOST           = http.MethodPost
@@ -30,27 +24,27 @@ var strToMethod = map[string]httpMethod{
 
 
 type Handlers map[httpMethod]http.HandlerFunc
-type Router   map[url.URL]Handlers
+type Routes   map[url.URL]Handlers
 
-func NewRouter() Router {
-    return Router{}
+func NewRoutes() Routes {
+    return Routes{}
 }
 
-func (r *Router) Get(path string, handler http.HandlerFunc) {
+func (r *Routes) Get(path string, handler http.HandlerFunc) {
     u := url.URL{
         Path: path,
     }
     r.addRoute(u, mGET, handler)
 }
 
-func (r *Router) Post(path string, handler http.HandlerFunc) {
+func (r *Routes) Post(path string, handler http.HandlerFunc) {
     u := url.URL{
         Path: path,
     }
     r.addRoute(u, mPOST, handler)
 }
 
-func (r *Router) addRoute(path url.URL, method httpMethod, handler http.HandlerFunc) {
+func (r *Routes) addRoute(path url.URL, method httpMethod, handler http.HandlerFunc) {
     if _, pathExists := (*r)[path] ; pathExists {
         (*r)[path][method] = handler
     } else {
@@ -63,40 +57,16 @@ func (r *Router) addRoute(path url.URL, method httpMethod, handler http.HandlerF
 
 }
 
-type Mux struct {
-    handler http.HandlerFunc
-}
-
-func (m *Mux) Init(r Router) {
-    m.handler = r.getHandler()
-}
-
-func NewMux() *Mux {
-    return &Mux{}
-}
-
-func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    m.handler(w, r)
-    fmt.Println("Doing nothing")
-}
-
-// Adds the route handlers to the multiplexer.
-func (r Router) Init(mux *http.ServeMux) {
-    h := r.getHandler()
-    for path,_ := range r {
-        mux.HandleFunc(path.String(), h)
-    }
-}
 
 // Gets the global handler function.
 // This function acts as the handler for all the requests.
 // Firstly checks that the route exists and that the method
 // is allowed, then maps the request to the specific handler 
 // function defined in the router map.
-func (router Router) getHandler() http.HandlerFunc{
+func (router Routes) getHandler() http.HandlerFunc{
     return func(w http.ResponseWriter, r *http.Request) {
         if _,pathExists := router[*r.URL] ; pathExists == false {
-            http.Error(w, "404 method not allowed", http.StatusNotFound)
+            http.Error(w, "404 Not Found", http.StatusNotFound)
             return
         } 
 

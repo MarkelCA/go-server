@@ -10,16 +10,14 @@ import (
 )
 
 func main() {
-    mux := router.NewMux()
     r := router.NewRouter()
+
     r.Get("/hello", hello.HelloGetHandler)
     r.Post("/hello", hello.HelloPostHandler)
     r.Get("/hello/me", hello.MeGetHandler)
 
-    mux.Init(r)
 
-
-    err := http.ListenAndServe(":8080", mux)
+    err := http.ListenAndServe(":8080", r)
 
     if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
