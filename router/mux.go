@@ -41,11 +41,15 @@ func (m *Mux) Post(path string, handler http.HandlerFunc) {
     m.routes.Post(path, handler)
 }
 
+func (m Mux) Routes() *Routes{
+    return m.routes
+}
+
 
 func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Handling request")
 
-    removeTrailingSlash(r.URL)
+    r.URL.Path = removeTrailingSlash(r.URL.String())
     m.handler(w, r)
 }
 

@@ -2,8 +2,8 @@ package router
 
 import (
     "net/http"
-    "net/url"
     "fmt"
+    "strings"
 )
 
 type httpMethod string
@@ -24,28 +24,22 @@ var strToMethod = map[string]httpMethod{
 
 
 type Handlers map[httpMethod]http.HandlerFunc
-type Routes   map[url.URL]Handlers
+type Routes   map[string]Handlers
 
 func NewRoutes() Routes {
     return Routes{}
 }
 
 func (r *Routes) Get(path string, handler http.HandlerFunc) {
-    u := url.URL{
-        Path: path,
-    }
-    r.addRoute(u, mGET, handler)
+    r.addRoute(path, mGET, handler)
 }
 
 func (r *Routes) Post(path string, handler http.HandlerFunc) {
-    u := url.URL{
-        Path: path,
-    }
-    r.addRoute(u, mPOST, handler)
+    r.addRoute(path, mPOST, handler)
 }
 
-func (r *Routes) addRoute(path url.URL, method httpMethod, handler http.HandlerFunc) {
-    removeTrailingSlash(&path)
+func (r *Routes) addRoute(path string, method httpMethod, handler http.HandlerFunc) {
+    removeTrailingSlash(path)
     if _, pathExists := (*r)[path] ; pathExists {
         (*r)[path][method] = handler
     } else {
@@ -54,18 +48,20 @@ func (r *Routes) addRoute(path url.URL, method httpMethod, handler http.HandlerF
         }
     }
 
-    fmt.Printf("Added route %-4v -> %v\n", method, path.String()) // Method right-padded with 4 spaces
+    fmt.Printf("Added route %-4v -> %v\n", method, path) // Method right-padded with 4 spaces
 
 }
 
 // Receives a request and if its URL ends with /
 // it removes it to match the original route
-func removeTrailingSlash(u *url.URL) {
-    ur := (*u).String()
-    lastURLChar := ur[len(ur)-1:]
+func removeTrailingSlash(url string) string {
+    //url := (*url).String()
+    lastURLChar := url[len(url)-1:]
     if lastURLChar == "/" {
-        u.Path = ur[:len(ur)-1]
+        url = url[:len(url)-1]
     }
+
+    return url
 
 }
 
@@ -77,20 +73,47 @@ func removeTrailingSlash(u *url.URL) {
 // function defined in the router map.
 func (router Routes) getHandler() http.HandlerFunc{
     return func(w http.ResponseWriter, r *http.Request) {
-        if _,pathExists := router[*r.URL] ; pathExists == false {
-            http.Error(w, "404 Not Found", http.StatusNotFound)
-            return
-        } 
+        //if router.exists(r.URL.Path) == false {
+            //http.Error(w, "404 Not Found", http.StatusNotFound)
+            //return
+        //} 
 
-        method := strToMethod[r.Method]
-        if _,methodAllowed := router[*r.URL][method]; methodAllowed == false {
-            w.Header().Set("Allow", r.Method)
-            http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
-            return
-        }
+        //method := strToMethod[r.Method]
+        //if _,methodAllowed := router[r.URL.Path][method]; methodAllowed == false {
+            //w.Header().Set("Allow", r.Method)
+            //http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+            //return
+        //}
 
-        router[*r.URL][method](w,r)
+        router.handle(w,r)
     }
 }
 
+func (router Routes) exists(path string) bool {
+    _, result := router[path]
+    return result
+}
+
+
+func (router Routes) handle(w http.ResponseWriter, r *http.Request) {
+    method := strToMethod[r.Method]
+    path   := r.URL.Path
+    //fmt.Printf("%v, %v", method, r.URL.Path)
+    if handler, handlerExists := router[path][method] ; handlerExists {
+        fmt.Println("642642642")
+        handler(w,r)
+    } else {
+        fmt.Println("HIIII")
+        fmt.Println(strings.Index(path, "{"))
+
+        for pos,_ := range path {
+            currentPath := path[:pos + 1]
+            if router.exists(currentPath) {
+                fmt.Println("found %v", currentPath)
+            }
+
+            //fmt.Printf("%c -> %v",char, router.exists(path[:pos]))
+        }
+    }
+}
 

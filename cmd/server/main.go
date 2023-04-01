@@ -5,6 +5,7 @@ import (
     "errors"
 	"log"
 	"net/http"
+	//"net/url"
 	"github.com/markelca/go-server/hello"
 	"github.com/markelca/go-server/router"
 )
@@ -16,6 +17,9 @@ func main() {
     r.Post("/hello", hello.HelloPostHandler)
     r.Get("/hello/me", hello.MeGetHandler)
 
+    r.Get("user/{id}", hello.HelloUsertHandler)
+
+    fmt.Printf("%v", r.Routes())
 
     err := http.ListenAndServe(":8080", r)
 

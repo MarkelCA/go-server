@@ -16,3 +16,7 @@ func MeGetHandler(w http.ResponseWriter, r *http.Request) {
 func HelloPostHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello Post Client!")
 }
+
+func HelloUsertHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Printf("%v", r)
+}
