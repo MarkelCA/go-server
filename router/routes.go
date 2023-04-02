@@ -24,21 +24,13 @@ var strToMethod = map[string]httpMethod{
 
 
 type Handlers map[httpMethod]http.HandlerFunc
-type Routes   map[string]Handlers
+type MapRoutes   map[string]Handlers
 
-func NewRoutes() Routes {
-    return Routes{}
+func NewRoutes() *MapRoutes {
+    return &MapRoutes{}
 }
 
-func (r *Routes) Get(path string, handler http.HandlerFunc) {
-    r.addRoute(path, mGET, handler)
-}
-
-func (r *Routes) Post(path string, handler http.HandlerFunc) {
-    r.addRoute(path, mPOST, handler)
-}
-
-func (r *Routes) addRoute(path string, method httpMethod, handler http.HandlerFunc) {
+func (r *MapRoutes) add(path string, method httpMethod, handler http.HandlerFunc) {
     removeTrailingSlash(path)
     if _, pathExists := (*r)[path] ; pathExists {
         (*r)[path][method] = handler
@@ -71,7 +63,7 @@ func removeTrailingSlash(url string) string {
 // Firstly checks that the route exists and that the method
 // is allowed, then maps the request to the specific handler 
 // function defined in the router map.
-func (router Routes) getHandler() http.HandlerFunc{
+func (router MapRoutes) getHandler() http.HandlerFunc{
     return func(w http.ResponseWriter, r *http.Request) {
         //if router.exists(r.URL.Path) == false {
             //http.Error(w, "404 Not Found", http.StatusNotFound)
@@ -89,13 +81,13 @@ func (router Routes) getHandler() http.HandlerFunc{
     }
 }
 
-func (router Routes) exists(path string) bool {
+func (router MapRoutes) exists(path string) bool {
     _, result := router[path]
     return result
 }
 
 
-func (router Routes) handle(w http.ResponseWriter, r *http.Request) {
+func (router MapRoutes) handle(w http.ResponseWriter, r *http.Request) {
     method := strToMethod[r.Method]
     path   := r.URL.Path
     //fmt.Printf("%v, %v", method, r.URL.Path)

@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-    r := router.NewRouter()
+    routes := router.NewRoutes()
+    r := router.NewRouter(routes)
 
     r.Get("/hello", hello.HelloGetHandler)
     r.Post("/hello", hello.HelloPostHandler)
@@ -19,7 +20,7 @@ func main() {
 
     r.Get("user/{id}", hello.HelloUsertHandler)
 
-    fmt.Printf("%v", r.Routes())
+    fmt.Printf("%v", r.Routes)
 
     err := http.ListenAndServe(":8080", r)
 

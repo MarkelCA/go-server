@@ -14,12 +14,21 @@ type Router interface {
     Routes
     Get(path string, handler http.HandlerFunc)
     Post(path string, handler http.HandlerFunc)
+    ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
-func NewRouter() *Mux {
-    routes := &Routes{}
+// It describes the common functions for a Routes object.
+// Useful to change the route handling/searching 
+// implementation.
+// e.g: HashMap based vs Trie based etc.
+type Routes interface {
+    getHandler() http.HandlerFunc
+    add(path string, method httpMethod, handler http.HandlerFunc)
+}
+
+func NewRouter(routes Routes) *Mux {
     return &Mux{
-        routes: routes,
+        Routes: routes,
         handler : routes.getHandler(),
     }
 }
@@ -29,22 +38,17 @@ func NewRouter() *Mux {
 // function, as well as the http verbs functions
 // to add more handlers.
 type Mux struct {
-    routes *Routes
+    Routes Routes
     handler http.HandlerFunc
 }
 
 func (m *Mux) Get(path string, handler http.HandlerFunc) {
-    m.routes.Get(path, handler)
+    m.Routes.add(path, mGET, handler)
 }
 
 func (m *Mux) Post(path string, handler http.HandlerFunc) {
-    m.routes.Post(path, handler)
+    m.Routes.add(path, mPOST, handler)
 }
-
-func (m Mux) Routes() *Routes{
-    return m.routes
-}
-
 
 func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Handling request")
