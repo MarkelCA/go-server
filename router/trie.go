@@ -86,7 +86,6 @@ func (t TrieRoutes) GetRouteHandler(route string, m httpMethod) *http.HandlerFun
 		}
 		currentNode = currentNode.children[c]
 	}
-    fmt.Printf("\nGetRouteHandler -> %v, %v\n", currentNode.handlers, m)
 	return currentNode.handlers[m]
 }
 
@@ -120,6 +119,7 @@ func (router TrieRoutes) GetHandler() http.HandlerFunc{
         //method := strToMethod[r.Method]
         path   := r.URL.Path
         method := strToMethod[r.Method]
+        fmt.Println(path)
         h := router.GetRouteHandler(path,method)
 
         if h != nil {

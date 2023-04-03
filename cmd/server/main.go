@@ -21,7 +21,7 @@ func main() {
 
     r.Get("user/{id}", hello.HelloUsertHandler)
 
-    fmt.Printf("%v", r.Routes)
+    router.PrintRoutes(r.Routes)
 
     err := http.ListenAndServe(":8080", r)
 

@@ -17,7 +17,6 @@ func NewMapRoutes() *MapRoutes {
 }
 
 func (r *MapRoutes) add(path string, method httpMethod, handler http.HandlerFunc) {
-    removeTrailingSlash(path)
     if _, pathExists := (*r)[path] ; pathExists {
         (*r)[path][method] = handler
     } else {
@@ -28,6 +27,10 @@ func (r *MapRoutes) add(path string, method httpMethod, handler http.HandlerFunc
 
     fmt.Printf("Added route %-4v -> %v\n", method, path) // Method right-padded with 4 spaces
 
+}
+
+func (r MapRoutes) Print() {
+    fmt.Println(r)
 }
 
 // Gets the global handler function.
