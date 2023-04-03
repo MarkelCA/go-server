@@ -34,6 +34,7 @@ func NewRouter(routes Routes) *Mux {
 }
 
 // Default implementation for the Router interface
+// multiplexer.
 // Contains the routes map and the main handler 
 // function, as well as the http verbs functions
 // to add more handlers.

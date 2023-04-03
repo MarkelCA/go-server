@@ -5,6 +5,15 @@ import (
     "net/http"
 )
 
+// Routes interface implementation using a Radix
+// trie data structure
+type TrieRoutes Trie
+
+func NewTrieRoutes() TrieRoutes {
+    trie := NewTrie()
+    return TrieRoutes{trie.root}
+}
+
 type Trie struct {
 	root *node
 }
@@ -25,14 +34,14 @@ func NewTrie() *Trie {
 	}
 }
 
-func (t *Trie) Insert(word string) {
+func (t *Trie) Insert(route string, h http.HandlerFunc) {
 	currentNode := t.root
-	for _, c := range word {
+	for _, c := range route {
 		if _, ok := currentNode.children[c]; !ok {
 			currentNode.children[c] = &node{
 				children: make(map[rune]*node),
 				isEnd:    false,
-                handler:  nil,
+                handler:  &h,
 			}
 		}
 		currentNode = currentNode.children[c]
@@ -40,9 +49,9 @@ func (t *Trie) Insert(word string) {
 	currentNode.isEnd = true
 }
 
-func (t *Trie) Search(word string) bool {
+func (t *Trie) Search(route string) bool {
 	currentNode := t.root
-	for _, c := range word {
+	for _, c := range route {
 		if _, ok := currentNode.children[c]; !ok {
 			return false
 		}
@@ -62,28 +71,39 @@ func (t *Trie) StartsWith(prefix string) bool {
 	return true
 }
 
+func (t Trie) GetHandler(route string) *http.HandlerFunc {
+	currentNode := t.root
+	for _, c := range route {
+		if _, ok := currentNode.children[c]; !ok {
+			return nil
+		}
+		currentNode = currentNode.children[c]
+	}
+	return currentNode.handler
+}
+
 func (t *Trie) Print() {
     t.printHelper(t.root, []rune{})
 }
 
-func (t *Trie) printHelper(node *node, word []rune) {
+func (t *Trie) printHelper(node *node, route []rune) {
     if node.isEnd {
-        fmt.Println(string(word))
+        fmt.Println(string(route))
     }
     for ch, child := range node.children {
-        t.printHelper(child, append(word, ch))
+        t.printHelper(child, append(route, ch))
     }
 }
 
 func main () {
     trie := NewTrie()
-    trie.Insert("apple")
-    trie.Insert("application")
+    handler := func(w http.ResponseWriter, r *http.Request) {}
+    trie.Insert("apple", handler)
+    trie.Insert("application", handler)
 
     trie.Print()
 
     fmt.Println(trie.Search("app"))
     fmt.Println(trie.StartsWith("app"))
 }
-
 

@@ -2,31 +2,17 @@ package router
 
 import (
     "net/http"
-    "fmt"
     "strings"
+    "fmt"
 )
 
-type httpMethod string
 
-const (
-	mGET httpMethod = http.MethodGet
-	mPOST           = http.MethodPost
-	mPUT            = http.MethodPut
-	mDELETE         = http.MethodDelete
-)
-
-var strToMethod = map[string]httpMethod{
-    http.MethodGet    : mGET,
-    http.MethodDelete : mDELETE,
-    http.MethodPost   : mPOST,
-    http.MethodPut    : mPUT,
-}
-
-
-type Handlers map[httpMethod]http.HandlerFunc
+// Routes interface implementation using a map
+// data structure
 type MapRoutes   map[string]Handlers
+type Handlers map[httpMethod]http.HandlerFunc
 
-func NewRoutes() *MapRoutes {
+func NewMapRoutes() *MapRoutes {
     return &MapRoutes{}
 }
 
@@ -43,20 +29,6 @@ func (r *MapRoutes) add(path string, method httpMethod, handler http.HandlerFunc
     fmt.Printf("Added route %-4v -> %v\n", method, path) // Method right-padded with 4 spaces
 
 }
-
-// Receives a request and if its URL ends with /
-// it removes it to match the original route
-func removeTrailingSlash(url string) string {
-    //url := (*url).String()
-    lastURLChar := url[len(url)-1:]
-    if lastURLChar == "/" {
-        url = url[:len(url)-1]
-    }
-
-    return url
-
-}
-
 
 // Gets the global handler function.
 // This function acts as the handler for all the requests.
@@ -81,12 +53,6 @@ func (router MapRoutes) getHandler() http.HandlerFunc{
     }
 }
 
-func (router MapRoutes) exists(path string) bool {
-    _, result := router[path]
-    return result
-}
-
-
 func (router MapRoutes) handle(w http.ResponseWriter, r *http.Request) {
     method := strToMethod[r.Method]
     path   := r.URL.Path
@@ -101,7 +67,7 @@ func (router MapRoutes) handle(w http.ResponseWriter, r *http.Request) {
         for pos,_ := range path {
             currentPath := path[:pos + 1]
             if router.exists(currentPath) {
-                fmt.Println("found %v", currentPath)
+                fmt.Printf("found %v", currentPath)
             }
 
             //fmt.Printf("%c -> %v",char, router.exists(path[:pos]))
@@ -109,12 +75,9 @@ func (router MapRoutes) handle(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-type RoutesV2 Trie
-
-func NewRoutesV2() RoutesV2 {
-    trie := NewTrie()
-    return RoutesV2{trie.root}
+func (router MapRoutes) exists(path string) bool {
+    _, result := router[path]
+    return result
 }
+
+
