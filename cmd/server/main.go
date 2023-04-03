@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-    routes := router.NewMapRoutes()
+    //routes := router.NewMapRoutes()
+    routes := router.NewTrieRoutes()
     r := router.NewRouter(routes)
 
     r.Get("/hello", hello.HelloGetHandler)

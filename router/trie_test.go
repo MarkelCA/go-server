@@ -6,7 +6,7 @@ import (
 )
 
 func TestInsert(t *testing.T) {
-    trie := NewTrie()
+    trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
     trie.Insert("apple", handler)
@@ -17,7 +17,7 @@ func TestInsert(t *testing.T) {
 }
 
 func TestSearch(t *testing.T) {
-    trie := NewTrie()
+    trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
     trie.Insert("apple", handler)
@@ -32,7 +32,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestStartsWith(t *testing.T) {
-    trie := NewTrie()
+    trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
     trie.Insert("apple", handler)
@@ -47,13 +47,13 @@ func TestStartsWith(t *testing.T) {
     }
 }
 
-func TestGetHandler(t *testing.T) {
-    trie := NewTrie()
+func TestGetRouteHandler(t *testing.T) {
+    trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
     trie.Insert("apple", handler)
 
-    if trie.GetHandler("apple") == nil {
+    if trie.GetRouteHandler("apple") == nil {
         t.Error("Expected 'apple' handler to not be nil.")
     }
 }

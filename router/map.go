@@ -35,7 +35,7 @@ func (r *MapRoutes) add(path string, method httpMethod, handler http.HandlerFunc
 // Firstly checks that the route exists and that the method
 // is allowed, then maps the request to the specific handler 
 // function defined in the router map.
-func (router MapRoutes) getHandler() http.HandlerFunc{
+func (router MapRoutes) GetHandler() http.HandlerFunc{
     return func(w http.ResponseWriter, r *http.Request) {
         //if router.exists(r.URL.Path) == false {
             //http.Error(w, "404 Not Found", http.StatusNotFound)

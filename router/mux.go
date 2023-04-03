@@ -22,14 +22,14 @@ type Router interface {
 // implementation.
 // e.g: HashMap based vs Trie based etc.
 type Routes interface {
-    getHandler() http.HandlerFunc
+    GetHandler() http.HandlerFunc
     add(path string, method httpMethod, handler http.HandlerFunc)
 }
 
 func NewRouter(routes Routes) *Mux {
     return &Mux{
         Routes: routes,
-        handler : routes.getHandler(),
+        handler : routes.GetHandler(),
     }
 }
 
