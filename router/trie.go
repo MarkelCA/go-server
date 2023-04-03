@@ -15,7 +15,7 @@ type TrieRoutes struct {
 type node struct {
 	children map[rune]*node
 	isEnd    bool
-    handler  *http.HandlerFunc
+    handlers  map[httpMethod]*http.HandlerFunc
 }
 
 func NewTrieRoutes() *TrieRoutes {
@@ -23,28 +23,37 @@ func NewTrieRoutes() *TrieRoutes {
 		root: &node{
 			children: make(map[rune]*node),
 			isEnd:    false,
-            handler:  nil,
+            handlers:  nil,
 		},
 	}
 }
 
 func (t *TrieRoutes) add(route string, m httpMethod, h http.HandlerFunc) {
-    t.Insert(route, h)
+    t.Insert(route, m, h)
 }
 
-func (t *TrieRoutes) Insert(route string, h http.HandlerFunc) {
+func (t *TrieRoutes) Insert(route string, m httpMethod, h http.HandlerFunc) {
 	currentNode := t.root
 	for _, c := range route {
 		if _, ok := currentNode.children[c]; !ok {
 			currentNode.children[c] = &node{
 				children: make(map[rune]*node),
 				isEnd:    false,
-                handler:  &h,
+                handlers:  nil,
 			}
 		}
 		currentNode = currentNode.children[c]
 	}
+
+    // We reached to the leaf
 	currentNode.isEnd = true
+    // We create the handlers if already don't exists,
+    // otherwise we add the new method to the hander
+    if currentNode.handlers == nil {
+        currentNode.handlers = map[httpMethod]*http.HandlerFunc {m: &h,}
+    } else {
+        currentNode.handlers[m] = &h
+    }
 }
 
 func (t *TrieRoutes) Search(route string) bool {
@@ -69,7 +78,7 @@ func (t *TrieRoutes) StartsWith(prefix string) bool {
 	return true
 }
 
-func (t TrieRoutes) GetRouteHandler(route string) http.HandlerFunc {
+func (t TrieRoutes) GetRouteHandler(route string, m httpMethod) *http.HandlerFunc {
 	currentNode := t.root
 	for _, c := range route {
 		if _, ok := currentNode.children[c]; !ok {
@@ -77,7 +86,8 @@ func (t TrieRoutes) GetRouteHandler(route string) http.HandlerFunc {
 		}
 		currentNode = currentNode.children[c]
 	}
-	return *currentNode.handler
+    fmt.Printf("\nGetRouteHandler -> %v, %v\n", currentNode.handlers, m)
+	return currentNode.handlers[m]
 }
 
 func (t *TrieRoutes) Print() {
@@ -109,7 +119,11 @@ func (router TrieRoutes) GetHandler() http.HandlerFunc{
 
         //method := strToMethod[r.Method]
         path   := r.URL.Path
-        router.GetRouteHandler(path)(w,r)
-        //router.handle(w,r)
+        method := strToMethod[r.Method]
+        h := router.GetRouteHandler(path,method)
+
+        if h != nil {
+            (*h)(w,r)
+        }
     }
 }

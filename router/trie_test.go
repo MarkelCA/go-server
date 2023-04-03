@@ -9,7 +9,7 @@ func TestInsert(t *testing.T) {
     trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
-    trie.Insert("apple", handler)
+    trie.Insert("apple",mGET, handler)
 
     if !trie.Search("apple") {
         t.Error("Expected 'apple' to be found in trie.")
@@ -20,7 +20,7 @@ func TestSearch(t *testing.T) {
     trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
-    trie.Insert("apple", handler)
+    trie.Insert("apple",mGET, handler)
 
     if !trie.Search("apple") {
         t.Error("Expected 'apple' to be found in trie.")
@@ -35,8 +35,8 @@ func TestStartsWith(t *testing.T) {
     trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
-    trie.Insert("apple", handler)
-    trie.Insert("application", handler)
+    trie.Insert("apple",mGET, handler)
+    trie.Insert("application",mGET, handler)
 
     if !trie.StartsWith("app") {
         t.Error("Expected trie to start with 'app'.")
@@ -51,9 +51,14 @@ func TestGetRouteHandler(t *testing.T) {
     trie := NewTrieRoutes()
     handler := func(w http.ResponseWriter, r *http.Request) {}
 
-    trie.Insert("apple", handler)
+    trie.Insert("apple",mGET, handler)
+    trie.Insert("apple",mPOST, handler)
 
-    if trie.GetRouteHandler("apple") == nil {
-        t.Error("Expected 'apple' handler to not be nil.")
+    if trie.GetRouteHandler("apple", mGET) == nil {
+        t.Error("Expected 'apple' GET handler to not be nil.")
+    }
+
+    if trie.GetRouteHandler("apple", mPOST) == nil {
+        t.Error("Expected 'apple' POST handler to not be nil.")
     }
 }
