@@ -60,11 +60,12 @@ func (router MapRoutes) handle(w http.ResponseWriter, r *http.Request) {
     method := strToMethod[r.Method]
     path   := r.URL.Path
     //fmt.Printf("%v, %v", method, r.URL.Path)
-    if handler, handlerExists := router[path][method] ; handlerExists {
-        fmt.Println("642642642")
+    if handler, ok := router[path][method] ; ok {
         handler(w,r)
     } else {
         fmt.Println("HIIII")
+        // For route in routes
+        //   if { in route:
         fmt.Println(strings.Index(path, "{"))
 
         for pos,_ := range path {

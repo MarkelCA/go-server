@@ -10,8 +10,7 @@ import (
 // implementation for the http request multiplexers
 // must have.
 type Router interface {
-    http.Handler
-    Routes
+    PrintRoutes()
     Get(path string, handler http.HandlerFunc)
     Post(path string, handler http.HandlerFunc)
     ServeHTTP(w http.ResponseWriter, r *http.Request)
@@ -27,11 +26,7 @@ type Routes interface {
     Print()
 }
 
-func PrintRoutes(r Routes) {
-    r.Print()
-}
-
-func NewRouter(routes Routes) *Mux {
+func NewCustomRouter(routes Routes) *Mux {
     return &Mux{
         Routes: routes,
         handler : routes.GetHandler(),
@@ -63,3 +58,6 @@ func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     m.handler(w, r)
 }
 
+func (m Mux) PrintRoutes() {
+    m.Routes.Print()
+}

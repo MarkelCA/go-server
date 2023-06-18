@@ -5,8 +5,7 @@ import (
     "net/http"
 )
 
-// Routes interface implementation using a Radix
-// trie data structure
+// Routes interface implementation using a trie data structure
 //type TrieRoutes TrieRoutes
 type TrieRoutes struct {
 	root *node
@@ -78,6 +77,7 @@ func (t *TrieRoutes) StartsWith(prefix string) bool {
 	return true
 }
 
+// It searches if a Handler exists given the route by iterating the trie
 func (t TrieRoutes) GetRouteHandler(route string, m httpMethod) *http.HandlerFunc {
 	currentNode := t.root
 	for _, c := range route {
