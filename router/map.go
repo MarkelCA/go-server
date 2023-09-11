@@ -2,7 +2,6 @@ package router
 
 import (
     "net/http"
-    "strings"
     "fmt"
 )
 
@@ -59,23 +58,10 @@ func (router MapRoutes) GetHandler() http.HandlerFunc{
 func (router MapRoutes) handle(w http.ResponseWriter, r *http.Request) {
     method := strToMethod[r.Method]
     path   := r.URL.Path
-    //fmt.Printf("%v, %v", method, r.URL.Path)
     if handler, ok := router[path][method] ; ok {
         handler(w,r)
     } else {
-        fmt.Println("HIIII")
-        // For route in routes
-        //   if { in route:
-        fmt.Println(strings.Index(path, "{"))
-
-        for pos,_ := range path {
-            currentPath := path[:pos + 1]
-            if router.exists(currentPath) {
-                fmt.Printf("found %v", currentPath)
-            }
-
-            //fmt.Printf("%c -> %v",char, router.exists(path[:pos]))
-        }
+        // if regexp.MustCompile()
     }
 }
 

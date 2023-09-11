@@ -124,6 +124,8 @@ func (router TrieRoutes) GetHandler() http.HandlerFunc{
 
         if h != nil {
             (*h)(w,r)
+        } else {
+            fmt.Println("starts?: ", router.StartsWith(string(path)))
         }
     }
 }

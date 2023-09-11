@@ -1,25 +1,27 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-    "errors"
 	"log"
 	"net/http"
+
 	"github.com/markelca/go-server/hello"
 	"github.com/markelca/go-server/router"
 )
 
 func main() {
-    //routes := router.NewMapRoutes()
-    //routes := router.NewTrieRoutes()
-    //r := router.NewCustomRouter(routes)
-    r := router.NewChiRouter()
+    // routes := router.NewMapRoutes()
+    routes := router.NewTrieRoutes()
+    r := router.NewCustomRouter(routes)
+    // r := router.NewChiRouter()
 
     r.Get("/hello", hello.HelloGetHandler)
     r.Post("/hello", hello.HelloPostHandler)
     r.Get("/hello/me", hello.MeGetHandler)
 
-    r.Get("/user/{id}", hello.HelloUsertHandler)
+
+    r.Get("/user/{id:\\d+}", hello.HelloUsertHandler)
 
     r.PrintRoutes()
 

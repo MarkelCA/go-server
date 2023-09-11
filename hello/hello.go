@@ -18,5 +18,5 @@ func HelloPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func HelloUsertHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("%v", r)
+    fmt.Fprintf(w, "%v", r)
 }
